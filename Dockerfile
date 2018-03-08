@@ -22,4 +22,3 @@ WORKDIR /opt/src/geometry-client-cpp/build
 RUN cmake .. && \
     make
 
-WORKDIR /opt/src/geometry-client-cpp
