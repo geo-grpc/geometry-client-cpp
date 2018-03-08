@@ -45,3 +45,5 @@ RUN protoc -I ./protos --cpp_out=./geometry ./protos/geometry_operators.proto
 WORKDIR /opt/src/geometry-client-cpp/build
 RUN cmake .. && \
     make
+
+WORKDIR /opt/src/geometry-client-cpp
