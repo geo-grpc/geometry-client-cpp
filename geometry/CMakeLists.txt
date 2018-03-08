@@ -1,0 +1,39 @@
+cmake_minimum_required(VERSION 3.5)
+project(geometry_lib)
+
+# Cmake find modules
+# GRPC and Protocol Buffers libraries location
+
+if (APPLE)
+    list(APPEND CMAKE_PREFIX_PATH "/Users/davidraleigh/code/google/grpc" "/Users/davidraleigh/code/google/grpc/third_party/protobuf")
+else()
+    list(APPEND CMAKE_PREFIX_PATH "/opt/src/grpc" "/opt/src/grpc/third_party/protobuf")
+endif()
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
+
+find_package(Protobuf REQUIRED)
+find_package(GRPC REQUIRED)
+
+set(PROTOS
+        ${CMAKE_CURRENT_SOURCE_DIR}/protos/geometry_operators.proto
+        )
+
+include_directories(${CMAKE_SOURCE_DIR}/geometry
+        /usr/local/include/grpc++)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# TODO this might change depending on system
+set(SOURCE_FILES
+        ./geometry_operators.grpc.pb.cc
+        ./geometry_operators.grpc.pb.h
+        ./geometry_operators.pb.cc
+        ./geometry_operators.pb.h)
+
+
+#target_link_libraries(geometry_lib
+#        )
+#link_directories(/usr/local/lib)
+add_library(geometry_lib
+        ${SOURCE_FILES})
