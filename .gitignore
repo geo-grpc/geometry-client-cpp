@@ -5,3 +5,4 @@ geometry/geometry_operators.pb.h
 geometry/geometry_operators.grpc.pb.cc
 geometry/geometry_operators.grpc.pb.h
 .idea/
+build/
