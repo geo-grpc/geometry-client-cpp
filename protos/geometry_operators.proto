@@ -112,24 +112,24 @@ enum ServiceOperatorType {
 }
 
 //message ServiceGeometryBag {
-message ServiceGeometry {
+message GeometryBagData {
     // id is usually associated with position in file format or database
-//    repeated int64 geometry_ids = 1;
+    //    repeated int64 geometry_ids = 1;
     repeated int64 geometry_id = 1;
     // TODO review esri encoding typename (this is for the esri shape binary format)
     // type can be 'wkt', 'wkb', 'geojson', or 'esri'
     GeometryEncodingType geometry_encoding_type = 2;
 
     // the geometry encoded as base64 (wkb or esri) or as a string (wkt or geojson)
-//    repeated string geometry_strings = 3;
-//    repeated bytes geometry_binaries = 4;
+    //    repeated string geometry_strings = 3;
+    //    repeated bytes geometry_binaries = 4;
     repeated string geometry_string = 3;
     repeated bytes geometry_binary = 4;
 
-    ServiceSpatialReference spatial_reference = 5;
+    SpatialReferenceData spatial_reference = 5;
 }
 
-message ServiceSpatialReference {
+message SpatialReferenceData {
     string proj4 = 4;
     // String that is a wkt, wkid, esri_wkt, or a proj4 string
     string esri_wkt = 5;
@@ -139,7 +139,7 @@ message ServiceSpatialReference {
 }
 
 message OperatorResult {
-    ServiceGeometry geometry = 1;
+    GeometryBagData geometry = 1;
 
     bool spatial_relationship = 2;
 
@@ -151,9 +151,9 @@ message OperatorResult {
 //message BigFileRequest {
 //    OperatorRequest nested_request = 1;
 //    ServiceOperatorType operator_type = 2;
-//    ServiceSpatialReference input_spatial_reference = 3;
-//    ServiceSpatialReference operation_spatial_reference = 4;
-//    ServiceSpatialReference result_spatial_reference = 5;
+//    SpatialReferenceData input_spatial_reference = 3;
+//    SpatialReferenceData operation_spatial_reference = 4;
+//    SpatialReferenceData result_spatial_reference = 5;
 //
 //    bytes data = 6;
 //    int64 offset = 7;
@@ -198,8 +198,8 @@ message OperatorResult {
 //}
 
 message OperatorRequest {
-    ServiceGeometry left_geometry = 1;
-    ServiceGeometry right_geometry = 2;
+    GeometryBagData left_geometry = 1;
+    GeometryBagData right_geometry = 2;
 
     OperatorRequest left_cursor = 3;
     OperatorRequest right_cursor = 4;
@@ -208,9 +208,9 @@ message OperatorRequest {
 
     GeometryEncodingType results_encoding_type = 6;
 
-    ServiceSpatialReference operation_spatial_reference = 7;
+    SpatialReferenceData operation_spatial_reference = 7;
 
-    ServiceSpatialReference result_spatial_reference = 8;
+    SpatialReferenceData result_spatial_reference = 8;
 
 
     bool convex_hull_merge = 9;

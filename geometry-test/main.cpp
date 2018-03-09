@@ -36,15 +36,15 @@ namespace {
         }
 
         std::unique_ptr<geometry::GeometryOperators::Stub> geometry_stub = geometry::GeometryOperators::NewStub(channel);
-        geometry::ServiceSpatialReference spatialReferenceWGS84;
+        geometry::SpatialReferenceData spatialReferenceWGS84;
         spatialReferenceWGS84.set_wkid(4326);
 
-        auto* spatialReferenceCalif = new geometry::ServiceSpatialReference();
+        auto* spatialReferenceCalif = new geometry::SpatialReferenceData();
         spatialReferenceCalif->set_wkid(32632);
 
         // allocating this here means it is not copied in the set_allocated method, but a strange rule of control is given to the
         // operator request message
-        auto* serviceGeometry = new geometry::ServiceGeometry();
+        auto* serviceGeometry = new geometry::GeometryBagData();
         const char* wkt = "MULTILINESTRING ((500000       0, 400000  100000, 600000 -100000))";
         serviceGeometry->add_geometry_string(wkt);
         serviceGeometry->set_geometry_encoding_type(geometry::GeometryEncodingType::wkt);
