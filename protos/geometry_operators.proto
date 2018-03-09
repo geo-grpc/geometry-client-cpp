@@ -111,15 +111,18 @@ enum ServiceOperatorType {
     EnclosingCircle = 46;
 }
 
+//message ServiceGeometryBag {
 message ServiceGeometry {
     // id is usually associated with position in file format or database
+//    repeated int64 geometry_ids = 1;
     repeated int64 geometry_id = 1;
-
     // TODO review esri encoding typename (this is for the esri shape binary format)
     // type can be 'wkt', 'wkb', 'geojson', or 'esri'
     GeometryEncodingType geometry_encoding_type = 2;
 
     // the geometry encoded as base64 (wkb or esri) or as a string (wkt or geojson)
+//    repeated string geometry_strings = 3;
+//    repeated bytes geometry_binaries = 4;
     repeated string geometry_string = 3;
     repeated bytes geometry_binary = 4;
 
