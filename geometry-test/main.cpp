@@ -52,7 +52,7 @@ namespace {
 
         auto* operatorRequest = new geometry::OperatorRequest();
         operatorRequest->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS84);
-        operatorRequest->set_allocated_left_geometry(serviceGeometry);
+        operatorRequest->set_allocated_left_geometry_bag(serviceGeometry);
         operatorRequest->set_allocated_operation_spatial_reference(spatialReferenceCalif);
         operatorRequest->set_operator_type(geometry::ServiceOperatorType::Project);
         operatorRequest->set_results_encoding_type(geometry::GeometryEncodingType::wkt);
@@ -62,7 +62,7 @@ namespace {
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
-        std::string result = operatorResult->geometry().geometry_strings(0);
+        std::string result = operatorResult->geometry_bag().geometry_strings(0);
 
         const char* expected = "MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))";
         EXPECT_STREQ(expected , result.c_str());
