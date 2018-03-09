@@ -46,7 +46,7 @@ namespace {
         // operator request message
         auto* serviceGeometry = new geometry::GeometryBagData();
         const char* wkt = "MULTILINESTRING ((500000       0, 400000  100000, 600000 -100000))";
-        serviceGeometry->add_geometry_string(wkt);
+        serviceGeometry->add_geometry_strings(wkt);
         serviceGeometry->set_geometry_encoding_type(geometry::GeometryEncodingType::wkt);
         serviceGeometry->set_allocated_spatial_reference(spatialReferenceCalif);
 
@@ -62,7 +62,7 @@ namespace {
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
-        std::string result = operatorResult->geometry().geometry_string(0);
+        std::string result = operatorResult->geometry().geometry_strings(0);
 
         const char* expected = "MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))";
         EXPECT_STREQ(expected , result.c_str());
