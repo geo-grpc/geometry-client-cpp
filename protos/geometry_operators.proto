@@ -198,8 +198,8 @@ message OperatorResult {
 
 message OperatorRequest {
 
-    GeometryBagData geometry_bag = 30;
-    OperatorRequest nested_request = 31;
+//    GeometryBagData geometry_bag = 30;
+//    OperatorRequest nested_request = 31;
 
     GeometryBagData left_geometry_bag = 1;
     GeometryBagData right_geometry_bag = 2;
@@ -214,7 +214,6 @@ message OperatorRequest {
     SpatialReferenceData operation_spatial_reference = 7;
 
     SpatialReferenceData result_spatial_reference = 8;
-
 
     bool convex_hull_merge = 9;
 
