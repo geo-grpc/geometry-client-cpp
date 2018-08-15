@@ -38,7 +38,7 @@ service GeometryOperators {
 
     rpc StreamOperationsEx(stream OperatorRequest) returns (stream OperatorResult) {}
 
-    rpc StreamFileOperations(stream BigFileRequest) returns (stream OperatorResult) {}
+    rpc StreamFileOperations(stream FileChunk) returns (stream OperatorResult) {}
 }
 
 /*
@@ -84,14 +84,14 @@ enum ServiceOperatorType {
     Clip = 21; // clip a geometry or geometries by a horizon
     Cut = 22; // cut geometry
     DensifyByLength = 23;
-//    DensifyByAngle = 24;
-//    LabelPoint = 25;
+    // DensifyByAngle = 24;
+    // LabelPoint = 25;
 
     GeodesicBuffer = 26;
     GeodeticDensifyByLength = 27;
-//    ShapePreservingDensify = 28;
+    // ShapePreservingDensify = 28;
     GeodeticLength = 29;
-//    GeodeticArea = 30;
+    // GeodeticArea = 30;
 
     Simplify = 31;
     SimplifyOGC = 32;
@@ -128,12 +128,12 @@ message GeometryBagData {
     // type can be 'wkt', 'wkb', 'geojson', or 'esri'
     GeometryEncodingType geometry_encoding_type = 2;
 
-    // the geometry encoded as base64 (wkb or esri) or as a string (wkt or geojson)
-    repeated string geometry_strings = 3;
-    repeated bytes geometry_binaries = 4;
+    repeated string wkt = 3;
+    repeated string geojson = 4;
+    repeated bytes wkb = 5;
+    repeated bytes esri_shape = 6;
 
-
-    SpatialReferenceData spatial_reference = 5;
+    SpatialReferenceData spatial_reference = 7;
 }
 
 message SpatialReferenceData {
@@ -159,7 +159,7 @@ enum FileType {
     Shapefile = 0;
 }
 
-message BigFileRequest {
+message FileChunk {
     OperatorRequest nested_request = 1;
     GeometryEncodingType results_encoding_type = 2;
 
@@ -240,14 +240,14 @@ message SimplifyParams {
 message OperatorRequest {
 //    oneof primary_geoms {
         GeometryBagData geometry_bag = 1;
-        OperatorRequest nested_request = 2;
+        OperatorRequest geometry_request = 2;
         GeometryBagData left_geometry_bag = 3;
-        OperatorRequest left_nested_request = 4;
+        OperatorRequest left_geometry_request = 4;
 //    }
 
 //    oneof secondary_geoms {
         GeometryBagData right_geometry_bag = 5;
-        OperatorRequest right_nested_request = 6;
+        OperatorRequest right_geometry_request = 6;
 //    }
 
     ServiceOperatorType operator_type = 7;
