@@ -14,6 +14,7 @@
 #include <grpc++/security/credentials.h>
 #include <cstdlib>
 #include <memory>
+#include <regex>
 
 namespace {
     class GeometryClientTest : public ::testing::Test {
@@ -88,9 +89,7 @@ namespace {
         // operator request message
         auto* serviceGeometry = new epl::grpc::geometry::GeometryBagData();
         const char* wkt = "MULTILINESTRING ((500000       0, 400000  100000, 600000 -100000))";
-//        serviceGeometry->add_geometry_strings(wkt);
         serviceGeometry->add_wkt(wkt);
-//        serviceGeometry->set_geometry_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
         serviceGeometry->set_allocated_spatial_reference(spatialReferenceCalif);
 
         auto* operatorRequest = new epl::grpc::geometry::OperatorRequest();
@@ -106,9 +105,15 @@ namespace {
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
         std::string result = operatorResult->geometry_bag().wkt(0);
-
-        const char* expected = "MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))";
-        EXPECT_STREQ(expected , result.c_str());
+        std::string expected("MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))");
+        std::string expected_2("MULTILINESTRING ((9 0, 8.101251062924646 0.9046185788931331, 9.898748937075354 -0.9046185788931331))");
+        if (strncmp(result.c_str(), expected.c_str(), expected.size()) != 0 &&
+                strncmp(result.c_str(), expected_2.c_str(), expected_2.size()) != 0) {
+            if (strncmp(result.c_str(), expected.c_str(), expected.size()) != 0)
+                EXPECT_STREQ(expected.c_str() , result.c_str());
+            else
+                EXPECT_STREQ(expected_2.c_str() , result.c_str());
+        }
     }
 
     TEST_F(GeometryClientTest, TEST_CRAZY_NESTING) {
@@ -159,25 +164,11 @@ namespace {
         auto* geometryBagLeft = new epl::grpc::geometry::GeometryBagData();
         geometryBagLeft->set_allocated_spatial_reference(&spatialReferenceNAD);
         geometryBagLeft->add_wkt(polyline);
-//        geometryBagLeft->set_geometry_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
-//        geometryBagLeft->add_geometry_strings(polyline);
 
-                /*
-        OperatorRequest serviceOpLeft = OperatorRequest
-                .newBuilder()
-                .setLeftGeometryBag(geometryBagLeft)
-                .setOperatorType(ServiceOperatorType.Buffer)
-                .setBufferParams(OperatorRequest.BufferParams.newBuilder().addDistances(.5).build())
-
-                .setResultSpatialReference(spatialReferenceWGS)
-                .build();
-                 */
         auto* serviceOpLeft = new epl::grpc::geometry::OperatorRequest();
         serviceOpLeft->set_allocated_left_geometry_bag(geometryBagLeft);
         serviceOpLeft->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Buffer);
         epl::grpc::geometry::BufferParams bufferParams;
-//        epl::grpc::geometry::OperatorRequest::
-//        epl::grpc::geometry::OperatorRequest_BufferParams bufferParams;
         bufferParams.add_distances(.5);
         serviceOpLeft->set_allocated_buffer_params(&bufferParams);
         serviceOpLeft->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS);
@@ -268,7 +259,7 @@ namespace {
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequestContains, operatorResult);
 
-        ::google::protobuf::Map< ::google::protobuf::int32, bool > stuff = operatorResult->relate_map();
+        ::google::protobuf::Map< ::google::protobuf::int64, bool > stuff = operatorResult->relate_map();
 //        std::string result = operatorResult->geometry_bag().geometry_strings(0);
 
         EXPECT_TRUE(stuff.at(0));
