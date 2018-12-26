@@ -36,28 +36,28 @@ namespace {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
 
-        std::unique_ptr<epl::grpc::geometry::GeometryOperators::Stub> geometry_stub = epl::grpc::geometry::GeometryOperators::NewStub(channel);
+        std::unique_ptr<epl::geometry::GeometryOperators::Stub> geometry_stub = epl::geometry::GeometryOperators::NewStub(channel);
 
-        epl::grpc::geometry::GeometryBagData serviceGeometry;
+        epl::geometry::GeometryBagData serviceGeometry;
         const char* wkt = "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 45 20, 30 5, 10 10, 10 30, 20 35), (30 20, 20 25, 20 15, 30 20)))";
         serviceGeometry.add_wkt(wkt);
 //        serviceGeometry.add_geometry_strings(wkt);
-//        serviceGeometry.set_geometry_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
+//        serviceGeometry.set_geometry_encoding_type(epl::geometry::GeometryEncodingType::wkt);
 
-        epl::grpc::geometry::GeometryBagData cutterGeometry;
+        epl::geometry::GeometryBagData cutterGeometry;
         const char* wkt_cutter = "LINESTRING(0 0, 45 45)";
         cutterGeometry.add_wkt(wkt_cutter);
 //        cutterGeometry.add_geometry_strings(wkt_cutter);
-//        cutterGeometry.set_geometry_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
+//        cutterGeometry.set_geometry_encoding_type(epl::geometry::GeometryEncodingType::wkt);
 
-        auto* operatorRequest = new epl::grpc::geometry::OperatorRequest();
+        auto* operatorRequest = new epl::geometry::OperatorRequest();
         operatorRequest->mutable_left_geometry_bag()->CopyFrom(serviceGeometry);
         operatorRequest->mutable_right_geometry_bag()->CopyFrom(cutterGeometry);
-        operatorRequest->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Cut);
-        operatorRequest->set_results_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
+        operatorRequest->set_operator_type(epl::geometry::ServiceOperatorType::Cut);
+        operatorRequest->set_results_encoding_type(epl::geometry::GeometryEncodingType::wkt);
 
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new epl::grpc::geometry::OperatorResult();
+        auto* operatorResult = new epl::geometry::OperatorResult();
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
@@ -77,30 +77,30 @@ namespace {
         } else {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
-        std::unique_ptr<epl::grpc::geometry::GeometryOperators::Stub> geometry_stub = epl::grpc::geometry::GeometryOperators::NewStub(channel);
+        std::unique_ptr<epl::geometry::GeometryOperators::Stub> geometry_stub = epl::geometry::GeometryOperators::NewStub(channel);
 
-        epl::grpc::geometry::SpatialReferenceData spatialReferenceWGS84;
+        epl::geometry::SpatialReferenceData spatialReferenceWGS84;
         spatialReferenceWGS84.set_wkid(4326);
 
-        auto* spatialReferenceCalif = new epl::grpc::geometry::SpatialReferenceData();
+        auto* spatialReferenceCalif = new epl::geometry::SpatialReferenceData();
         spatialReferenceCalif->set_wkid(32632);
 
         // allocating this here means it is not copied in the set_allocated method, but a strange rule of control is given to the
         // operator request message
-        auto* serviceGeometry = new epl::grpc::geometry::GeometryBagData();
+        auto* serviceGeometry = new epl::geometry::GeometryBagData();
         const char* wkt = "MULTILINESTRING ((500000       0, 400000  100000, 600000 -100000))";
         serviceGeometry->add_wkt(wkt);
         serviceGeometry->set_allocated_spatial_reference(spatialReferenceCalif);
 
-        auto* operatorRequest = new epl::grpc::geometry::OperatorRequest();
+        auto* operatorRequest = new epl::geometry::OperatorRequest();
         operatorRequest->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS84);
         operatorRequest->set_allocated_left_geometry_bag(serviceGeometry);
         operatorRequest->set_allocated_operation_spatial_reference(spatialReferenceCalif);
-        operatorRequest->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Project);
-        operatorRequest->set_results_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
+        operatorRequest->set_operator_type(epl::geometry::ServiceOperatorType::Project);
+        operatorRequest->set_results_encoding_type(epl::geometry::GeometryEncodingType::wkt);
 
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new epl::grpc::geometry::OperatorResult();
+        auto* operatorResult = new epl::geometry::OperatorResult();
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
@@ -123,7 +123,7 @@ namespace {
         } else {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
-        std::unique_ptr<epl::grpc::geometry::GeometryOperators::Stub> geometry_stub = epl::grpc::geometry::GeometryOperators::NewStub(channel);
+        std::unique_ptr<epl::geometry::GeometryOperators::Stub> geometry_stub = epl::geometry::GeometryOperators::NewStub(channel);
 
         /*
          * Polyline polyline = new Polyline();
@@ -146,13 +146,13 @@ namespace {
         SpatialReferenceData spatialReferenceGall = SpatialReferenceData.newBuilder().setWkid(54016).build();
         //TODO why does esri shape fail
           */
-        epl::grpc::geometry::SpatialReferenceData spatialReferenceNAD;
+        epl::geometry::SpatialReferenceData spatialReferenceNAD;
         spatialReferenceNAD.set_wkid(4269);
-        epl::grpc::geometry::SpatialReferenceData spatialReferenceMerc;
+        epl::geometry::SpatialReferenceData spatialReferenceMerc;
         spatialReferenceMerc.set_wkid(3857);
-        epl::grpc::geometry::SpatialReferenceData spatialReferenceWGS;
+        epl::geometry::SpatialReferenceData spatialReferenceWGS;
         spatialReferenceWGS.set_wkid(4326);
-        epl::grpc::geometry::SpatialReferenceData spatialReferenceGall;
+        epl::geometry::SpatialReferenceData spatialReferenceGall;
         spatialReferenceGall.set_wkid(54016);
 /*
         GeometryBagData geometryBagLeft = GeometryBagData.newBuilder()
@@ -161,14 +161,14 @@ namespace {
                 .setSpatialReference(spatialReferenceNAD)
                 .build();
                 */
-        auto* geometryBagLeft = new epl::grpc::geometry::GeometryBagData();
+        auto* geometryBagLeft = new epl::geometry::GeometryBagData();
         geometryBagLeft->set_allocated_spatial_reference(&spatialReferenceNAD);
         geometryBagLeft->add_wkt(polyline);
 
-        auto* serviceOpLeft = new epl::grpc::geometry::OperatorRequest();
+        auto* serviceOpLeft = new epl::geometry::OperatorRequest();
         serviceOpLeft->set_allocated_left_geometry_bag(geometryBagLeft);
-        serviceOpLeft->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Buffer);
-        epl::grpc::geometry::BufferParams bufferParams;
+        serviceOpLeft->set_operator_type(epl::geometry::ServiceOperatorType::Buffer);
+        epl::geometry::BufferParams bufferParams;
         bufferParams.add_distances(.5);
         serviceOpLeft->set_allocated_buffer_params(&bufferParams);
         serviceOpLeft->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS);
@@ -181,9 +181,9 @@ namespace {
                 .setResultSpatialReference(spatialReferenceGall)
                 .build();
                 */
-        auto* nestedLeft = new epl::grpc::geometry::OperatorRequest();
+        auto* nestedLeft = new epl::geometry::OperatorRequest();
         nestedLeft->set_allocated_left_geometry_request(serviceOpLeft);
-        nestedLeft->set_operator_type(epl::grpc::geometry::ServiceOperatorType::ConvexHull);
+        nestedLeft->set_operator_type(epl::geometry::ServiceOperatorType::ConvexHull);
         nestedLeft->mutable_result_spatial_reference()->CopyFrom(spatialReferenceGall);
 
                 /*
@@ -194,10 +194,10 @@ namespace {
                 .addGeometryBinaries(ByteString.copyFrom(op.execute(0, polyline, null)))
                 .build();
                  */
-        auto* geometryBagRight = new epl::grpc::geometry::GeometryBagData();
+        auto* geometryBagRight = new epl::geometry::GeometryBagData();
         geometryBagRight->set_allocated_spatial_reference(&spatialReferenceNAD);
         geometryBagRight->add_wkt(polyline);
-//        geometryBagRight->set_geometry_encoding_type(epl::grpc::geometry::GeometryEncodingType::wkt);
+//        geometryBagRight->set_geometry_encoding_type(epl::geometry::GeometryEncodingType::wkt);
 //        geometryBagRight->add_geometry_strings(polyline);
 
                  /*
@@ -209,11 +209,11 @@ namespace {
                 .setOperationSpatialReference(spatialReferenceWGS)
                 .build();
                   */
-        auto* serviceOpRight = new epl::grpc::geometry::OperatorRequest();
+        auto* serviceOpRight = new epl::geometry::OperatorRequest();
         serviceOpRight->set_allocated_left_geometry_bag(geometryBagRight);
-        serviceOpRight->set_operator_type(epl::grpc::geometry::ServiceOperatorType::GeodesicBuffer);
-        epl::grpc::geometry::BufferParams geodesicBufferParams;
-//        epl::grpc::geometry::OperatorRequest_BufferParams geodesicBufferParams;
+        serviceOpRight->set_operator_type(epl::geometry::ServiceOperatorType::GeodesicBuffer);
+        epl::geometry::BufferParams geodesicBufferParams;
+//        epl::geometry::OperatorRequest_BufferParams geodesicBufferParams;
         geodesicBufferParams.add_distances(1000);
         geodesicBufferParams.set_union_result(false);
         serviceOpRight->set_allocated_buffer_params(&geodesicBufferParams);
@@ -227,9 +227,9 @@ namespace {
                 .setResultSpatialReference(spatialReferenceGall)
                 .build();
                    */
-        auto* nestedRight = new epl::grpc::geometry::OperatorRequest();
+        auto* nestedRight = new epl::geometry::OperatorRequest();
         nestedRight->set_allocated_left_geometry_request(serviceOpRight);
-        nestedRight->set_operator_type(epl::grpc::geometry::ServiceOperatorType::ConvexHull);
+        nestedRight->set_operator_type(epl::geometry::ServiceOperatorType::ConvexHull);
         nestedRight->mutable_result_spatial_reference()->CopyFrom(spatialReferenceGall);
 
 
@@ -243,10 +243,10 @@ namespace {
                 .setOperationSpatialReference(spatialReferenceMerc)
                 .build();
                     */
-        auto* operatorRequestContains = new epl::grpc::geometry::OperatorRequest();
+        auto* operatorRequestContains = new epl::geometry::OperatorRequest();
         operatorRequestContains->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestContains->set_allocated_right_geometry_request(serviceOpRight);
-        operatorRequestContains->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Contains);
+        operatorRequestContains->set_operator_type(epl::geometry::ServiceOperatorType::Contains);
         operatorRequestContains->mutable_operation_spatial_reference()->CopyFrom(spatialReferenceMerc);
                     /*
 
@@ -255,7 +255,7 @@ namespace {
         Map<Integer, Boolean> map = operatorResult.getRelateMapMap();
   */
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new epl::grpc::geometry::OperatorResult();
+        auto* operatorResult = new epl::geometry::OperatorResult();
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequestContains, operatorResult);
 
@@ -265,14 +265,14 @@ namespace {
         EXPECT_TRUE(stuff.at(0));
 
         auto* clientContext2 = new grpc::ClientContext();
-        auto* operatorResult2 = new epl::grpc::geometry::OperatorResult();
+        auto* operatorResult2 = new epl::geometry::OperatorResult();
 
-        auto* operatorRequestUnion = new epl::grpc::geometry::OperatorRequest();
+        auto* operatorRequestUnion = new epl::geometry::OperatorRequest();
         operatorRequestUnion->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestUnion->set_allocated_right_geometry_request(serviceOpRight);
-        operatorRequestUnion->set_operator_type(epl::grpc::geometry::ServiceOperatorType::Union);
+        operatorRequestUnion->set_operator_type(epl::geometry::ServiceOperatorType::Union);
         operatorRequestUnion->mutable_operation_spatial_reference()->CopyFrom(spatialReferenceMerc);
-        operatorRequestUnion->set_results_encoding_type(epl::grpc::geometry::geojson);
+        operatorRequestUnion->set_results_encoding_type(epl::geometry::geojson);
 
         geometry_stub->ExecuteOperation(clientContext2, *operatorRequestUnion, operatorResult2);
 
