@@ -6,8 +6,6 @@ project(geometry_lib)
 
 if (APPLE)
     list(APPEND CMAKE_PREFIX_PATH "/Users/davidraleigh/code/google/grpc" "/Users/davidraleigh/code/google/grpc/third_party/protobuf")
-    file(COPY /Users/davidraleigh/code/geometry-service-java/src/main/proto/geometry_operators.proto
-            DESTINATION ${CMAKE_CURRENT_LIST_DIR}/../protos/)
 else()
     list(APPEND CMAKE_PREFIX_PATH "/opt/src/grpc" "/opt/src/grpc/third_party/protobuf")
 endif()
