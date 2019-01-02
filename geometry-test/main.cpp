@@ -16,7 +16,7 @@
 #include <memory>
 #include <regex>
 
-using namespace epl::protobuf::geometry;
+using namespace epl::protobuf;
 namespace {
     class GeometryClientTest : public ::testing::Test {
     protected:
