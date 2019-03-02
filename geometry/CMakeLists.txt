@@ -4,6 +4,7 @@ project(geometry_lib)
 # Cmake find modules
 # GRPC and Protocol Buffers libraries location
 
+
 if (APPLE)
     list(APPEND CMAKE_PREFIX_PATH "/Users/davidraleigh/code/google/grpc" "/Users/davidraleigh/code/google/grpc/third_party/protobuf")
 else()
@@ -25,8 +26,7 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 
 
-include_directories(${CMAKE_SOURCE_DIR}/geometry
-        /usr/local/include/grpc++)
+include_directories(${CMAKE_SOURCE_DIR}/geometry /usr/local/include/grpc++)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
