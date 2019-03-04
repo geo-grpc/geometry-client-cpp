@@ -62,8 +62,7 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS DEST)
 
         MESSAGE(STATUS "file included ${FIL}")
         MESSAGE(STATUS "FIL_WE included ${FIL_WE}")
-        MESSAGE(STATUS "SRCS included ${${SRCS}}")
-        MESSAGE(STATUS "HDRS included ${${HDRS}}")
+
         MESSAGE(STATUS "Command --cpp_out ${DEST} ${_protobuf_include_path} ${ABS_FIL}")
 
         add_custom_command(
@@ -75,6 +74,9 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS DEST)
                 COMMENT "Running C++ protobuf compiler on ${FIL} with args: --cpp_out ${DEST} ${_protobuf_include_path} ${ABS_FIL}"
                 VERBATIM )
     endforeach()
+
+    MESSAGE(STATUS "SRCS included ${${SRCS}}")
+    MESSAGE(STATUS "HDRS included ${${HDRS}}")
 
     set_source_files_properties(${${SRCS}} ${${HDRS}} PROPERTIES GENERATED TRUE)
     set(${SRCS} ${${SRCS}} PARENT_SCOPE)

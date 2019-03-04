@@ -16,15 +16,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
 find_package(Protobuf REQUIRED)
 find_package(GRPC REQUIRED)
 
-#set(PROTOS_PROTOBUF ${CMAKE_CURRENT_SOURCE_DIR}/proto/epl/protobuf/geometry.proto)
-#set(PROTOS_GRPC ${CMAKE_CURRENT_SOURCE_DIR}/proto/epl/grpc/geometry_operators.proto)
+set(PROTOS_PROTOBUF ${CMAKE_SOURCE_DIR}/proto/geometry.proto)
+set(PROTOS_GRPC ${CMAKE_SOURCE_DIR}/proto/geometry_operators.proto)
 
 set(PROTO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-#file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
+file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
 
 
-#set(PROTOBUF_IMPORT_DIRS ${CMAKE_CURRENT_LIST_DIR}/proto)
-#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC} ${PROTOS_PROTOBUF})
+set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC} ${PROTOS_PROTOBUF})
+MESSAGE(STATUS "PROTO_SRCS  ${PROTO_SRCS}")
+MESSAGE(STATUS "PROTO_HDRS included ${PROTO_HDRS}")
 #grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC})
 #add_custom_target(name ALL
 #        DEPENDS
@@ -38,10 +40,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # TODO this might change depending on system
 set(SOURCE_FILES
-        ${PROTO_SRC_DIR}/geometry.pb.h
-        ${PROTO_SRC_DIR}/geometry.pb.cc
-        ${PROTO_SRC_DIR}/geometry_operators.pb.h
-        ${PROTO_SRC_DIR}/geometry_operators.pb.cc
+        ${PROTO_HDRS}
+        ${PROTO_SRCS}
         ${PROTO_SRC_DIR}/geometry_operators.grpc.pb.h
         ${PROTO_SRC_DIR}/geometry_operators.grpc.pb.cc)
 
