@@ -43,14 +43,10 @@ namespace {
         GeometryBagData serviceGeometry;
         const char* wkt = "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 45 20, 30 5, 10 10, 10 30, 20 35), (30 20, 20 25, 20 15, 30 20)))";
         serviceGeometry.add_wkt(wkt);
-//        serviceGeometry.add_geometry_strings(wkt);
-//        serviceGeometry.set_geometry_encoding_type(GeometryEncodingType::wkt);
 
         GeometryBagData cutterGeometry;
         const char* wkt_cutter = "LINESTRING(0 0, 45 45)";
         cutterGeometry.add_wkt(wkt_cutter);
-//        cutterGeometry.add_geometry_strings(wkt_cutter);
-//        cutterGeometry.set_geometry_encoding_type(GeometryEncodingType::wkt);
 
         auto* operatorRequest = new OperatorRequest();
         operatorRequest->mutable_left_geometry_bag()->CopyFrom(serviceGeometry);
@@ -63,6 +59,8 @@ namespace {
 
         geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
 
+        EXPECT_TRUE(operatorResult != nullptr);
+        EXPECT_EQ(2, operatorResult->geometry_bag().wkt_size());
         std::string result1 = operatorResult->geometry_bag().wkt(0);
         std::string result2 = operatorResult->geometry_bag().wkt(1);
         const char* expected1 = "MULTIPOLYGON (((35.625 35.625, 40 40, 20 45, 35.625 35.625)), ((10 10, 20 20, 20 25, 23.333333333333336 23.333333333333336, 29.375 29.375, 20 35, 10 30, 10 10)))";

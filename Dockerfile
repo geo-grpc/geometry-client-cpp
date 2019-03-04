@@ -1,23 +1,26 @@
-FROM us.gcr.io/echoparklabs/grpc-cpp:latest
+FROM ubuntu:bionic
 
 MAINTAINER David Raleigh <david@echoparklabs.io>
 
-RUN DEBIAN_FRONTEND=noninteractive apt update
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+    apt-get install -y build-essential \
+    autoconf \
+    pkg-config \
+    libprotobuf-dev \
+    libgrpc++-dev \
+    protobuf-compiler-grpc \
+    libgtest-dev \
+    cmake && \
+    rm -rf /var/lib/apt
 
-WORKDIR /opt/src
-RUN git clone https://github.com/google/googletest --branch release-1.7.0 --depth 1
-WORKDIR /opt/src/googletest/build
-RUN cmake ../ && \
+RUN cd /usr/src/gtest && \
+    cmake CMakeLists.txt && \
     make && \
-    cp -a /opt/src/googletest/include/gtest/ /usr/include && \
-    cp -a /opt/src/googletest/build/libgtest.a /opt/src/googletest/build/libgtest_main.a /usr/lib/ && \
-    ldconfig -v
+    cp *.a /usr/lib
 
 WORKDIR /opt/src/geometry-client-cpp
 COPY ./ ./
 
-#RUN protoc -I ./protos --grpc_out=./geometry --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ./protos/geometry_operators.proto
-#RUN protoc -I ./protos --cpp_out=./geometry ./protos/geometry_operators.proto
 WORKDIR /opt/src/geometry-client-cpp/build
 RUN cmake .. && \
     make
