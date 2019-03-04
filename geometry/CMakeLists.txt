@@ -16,26 +16,36 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
 find_package(Protobuf REQUIRED)
 find_package(GRPC REQUIRED)
 
-set(PROTOS_PROTOBUF ${CMAKE_SOURCE_DIR}/proto/geometry.proto)
-set(PROTOS_GRPC ${CMAKE_SOURCE_DIR}/proto/geometry_operators.proto)
+set(PROTOS_PROTOBUF ${CMAKE_SOURCE_DIR}/proto/epl/protobuf/geometry.proto)
+set(PROTOS_GRPC ${CMAKE_SOURCE_DIR}/proto/epl/grpc/geometry_operators.proto)
 
-set(PROTO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(PROTO_SRC_DIR ${CMAKE_SOURCE_DIR}/geometry/src)
 file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
+file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl)
+file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl/protobuf)
+file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl/grpc)
 
-set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC} ${PROTOS_PROTOBUF})
-grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC})
+#set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
+#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR}/epl/protobuf ${PROTOS_PROTOBUF})
+#MESSAGE(STATUS "PROTO_HDRS ${PROTO_HDRS}")
+#protobuf_generate_cpp(PROTO_SRCS_2 PROTO_HDRS_2 ${PROTO_SRC_DIR}/epl/grpc ${PROTOS_GRPC})
+#MESSAGE(STATUS "PROTO_HDRS_2 ${PROTO_HDRS_2}")
+
+grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR}/epl/grpc ${PROTOS_GRPC})
 
 include_directories(${PROTO_SRC_DIR} /usr/local/include/grpc++)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+
 # TODO this might change depending on system
 set(SOURCE_FILES
-        ${PROTO_HDRS}
-        ${PROTO_SRCS}
-        ${GRPC_HDRS}
-        ${GRPC_SRCS})
+        ${PROTO_SRC_DIR}/epl/protobuf/geometry.pb.h
+        ${PROTO_SRC_DIR}/epl/protobuf/geometry.pb.cc
+        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.pb.h
+        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.pb.cc
+        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.grpc.pb.h
+        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.grpc.pb.cc)
 
 add_library(geometry_lib
         ${SOURCE_FILES})
