@@ -289,3 +289,6 @@ message EnvelopeData {
     SpatialReferenceData spatial_reference = 5;
 }
 
+message Mask {
+    double r = 1;
+}

@@ -25,27 +25,37 @@ file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl)
 file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl/protobuf)
 file(MAKE_DIRECTORY ${PROTO_SRC_DIR}/epl/grpc)
 
-#set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
-#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR}/epl/protobuf ${PROTOS_PROTOBUF})
-#MESSAGE(STATUS "PROTO_HDRS ${PROTO_HDRS}")
-#protobuf_generate_cpp(PROTO_SRCS_2 PROTO_HDRS_2 ${PROTO_SRC_DIR}/epl/grpc ${PROTOS_GRPC})
-#MESSAGE(STATUS "PROTO_HDRS_2 ${PROTO_HDRS_2}")
+set(PROTOBUF_GENERATE_CPP_APPEND_PATH OFF)
+set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
+set(protobuf_generate_PROTOC_OUT_DIR ${PROTO_SRC_DIR}/epl/protobuf)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS_PROTOBUF})
+MESSAGE(STATUS "PROTO_HDRS ${PROTO_HDRS}")
 
-grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR}/epl/grpc ${PROTOS_GRPC})
+set(protobuf_generate_PROTOC_OUT_DIR ${PROTO_SRC_DIR}/epl/grpc)
+set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
+protobuf_generate_cpp(PROTO_SRCS_2 PROTO_HDRS_2 ${PROTO_SRC_DIR} ${PROTOS_GRPC})
+MESSAGE(STATUS "PROTO_HDRS_2 ${PROTO_HDRS_2}")
+
+set(protobuf_generate_PROTOC_OUT_DIR ${PROTO_SRC_DIR}/epl/grpc)
+grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC})
 
 include_directories(${PROTO_SRC_DIR} /usr/local/include/grpc++)
+add_custom_target(run ALL
+        DEPENDS ${PROTO_HDRS}
+        DEPENDS ${PROTO_HDRS_2}
+        DEPENDS ${GRPC_HDRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 
 # TODO this might change depending on system
 set(SOURCE_FILES
-        ${PROTO_SRC_DIR}/epl/protobuf/geometry.pb.h
-        ${PROTO_SRC_DIR}/epl/protobuf/geometry.pb.cc
-        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.pb.h
-        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.pb.cc
-        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.grpc.pb.h
-        ${PROTO_SRC_DIR}/epl/grpc/geometry_operators.grpc.pb.cc)
+        ${PROTO_HDRS}
+        ${PROTO_SRCS}
+        ${PROTO_HDRS_2}
+        ${PROTO_SRCS_2}
+        ${GRPC_HDRS}
+        ${GRPC_SRCS})
 
 add_library(geometry_lib
         ${SOURCE_FILES})

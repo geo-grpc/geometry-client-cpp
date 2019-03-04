@@ -31,13 +31,16 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
             get_filename_component(ABS_FIL ${FIL} ABSOLUTE)
             get_filename_component(ABS_PATH ${ABS_FIL} PATH)
             list(FIND _protobuf_include_path ${ABS_PATH} _contains_already)
-            if(${_contains_already} EQUAL -1)
+            if(${_contains_already} EQUAL -1  AND ${PROTOBUF_GENERATE_CPP_APPEND_PATH} EQUAL ON)
                 list(APPEND _protobuf_include_path -I ${ABS_PATH})
+                MESSAGE(STATUS "contains_protobuf_include_path included ${_protobuf_include_path}")
             endif()
         endforeach()
     else()
         set(_protobuf_include_path -I ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
+
+    MESSAGE(STATUS "_protobuf_include_path included ${_protobuf_include_path}")
 
     if(DEFINED PROTOBUF_IMPORT_DIRS)
         foreach(DIR ${PROTOBUF_IMPORT_DIRS})
@@ -57,8 +60,14 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
         get_filename_component(ABS_FIL ${FIL} ABSOLUTE)
         get_filename_component(FIL_WE ${FIL} NAME_WE)
 
-        list(APPEND ${SRCS} "${DEST}/${FIL_WE}.grpc.pb.cc")
-        list(APPEND ${HDRS} "${DEST}/${FIL_WE}.grpc.pb.h")
+        if(NOT protobuf_generate_PROTOC_OUT_DIR)
+            set(OUTPUT_DEST "${DEST}")
+        else()
+            set(OUTPUT_DEST "${protobuf_generate_PROTOC_OUT_DIR}")
+        endif()
+
+        list(APPEND ${SRCS} "${OUTPUT_DEST}/${FIL_WE}.grpc.pb.cc")
+        list(APPEND ${HDRS} "${OUTPUT_DEST}/${FIL_WE}.grpc.pb.h")
 
         MESSAGE(STATUS "file included ${FIL}")
         MESSAGE(STATUS "FIL_WE included ${FIL_WE}")
@@ -67,8 +76,8 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
         MESSAGE(STATUS "Command --grpc_out  ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}")
 
         add_custom_command(
-                OUTPUT "${DEST}/${FIL_WE}.grpc.pb.cc"
-                "${DEST}/${FIL_WE}.grpc.pb.h"
+                OUTPUT "${OUTPUT_DEST}/${FIL_WE}.grpc.pb.cc"
+                "${OUTPUT_DEST}/${FIL_WE}.grpc.pb.h"
                 COMMAND protobuf::protoc
                 ARGS --grpc_out ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}
                 DEPENDS ${ABS_FIL} protobuf::protoc gRPC::grpc_cpp_plugin
