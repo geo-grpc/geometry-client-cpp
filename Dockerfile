@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM debian:sid
 
 MAINTAINER David Raleigh <david@echoparklabs.io>
 
