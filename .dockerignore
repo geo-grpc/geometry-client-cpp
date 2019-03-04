@@ -1,6 +1,3 @@
-
+./build
 ./cmake-build-debug
-./geometry/geometry_operators.pb.cc
-./geometry/geometry_operators.pb.h
-./geometry/geometry_operators.grpc.pb.cc
-./geometry/geometry_operators.grpc.pb.h
+./geometry/src
