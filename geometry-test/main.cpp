@@ -4,8 +4,8 @@
 
 //#include "../geometry/geometry_operators.grpc.pb.h"
 //#include "../geometry/geometry_operators.pb.h"
-#include "geometry.pb.h"
-#include "geometry_operators.grpc.pb.h"
+#include "epl/protobuf/geometry.pb.h"
+#include "epl/grpc/geometry_operators.grpc.pb.h"
 #include "gtest/gtest.h"
 #include <grpc/grpc.h>
 #include <grpc++/channel.h>
