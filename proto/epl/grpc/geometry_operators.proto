@@ -34,13 +34,13 @@ import "epl/protobuf/geometry.proto";
 */
 service GeometryOperators {
     // Execute a single geometry operation
-    rpc ExecuteOperation(epl.protobuf.OperatorRequest) returns (epl.protobuf.OperatorResult) {}
+    rpc ExecuteOperation(OperatorRequest) returns (OperatorResult) {}
 
     // Stream in requests and return a stream of results
-    rpc StreamOperations(stream epl.protobuf.OperatorRequest) returns (stream epl.protobuf.OperatorResult) {}
+    rpc StreamOperations(stream OperatorRequest) returns (stream OperatorResult) {}
 
-    rpc StreamOperationsEx(stream epl.protobuf.OperatorRequest) returns (stream epl.protobuf.OperatorResult) {}
+    rpc StreamOperationsEx(stream OperatorRequest) returns (stream OperatorResult) {}
 
     // stream in file chunks for a geometry file type and stream back results for each geometry encountered
-    rpc StreamFileOperations(stream epl.protobuf.FileChunk) returns (stream epl.protobuf.OperatorResult) {}
+    rpc StreamFileOperations(stream FileChunk) returns (stream OperatorResult) {}
 }

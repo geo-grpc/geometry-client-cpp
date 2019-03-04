@@ -1,7 +1,9 @@
 From inside repo directory
 
 ```bash
-protoc --cpp_out ./geometry/src -I ./proto  ./proto/epl/grpc/geometry_operators.proto ./proto/epl/protobuf/geometry.proto
+protoc --cpp_out ./geometry/src -I ./proto \
+    ./proto/epl/grpc/geometry_operators.proto \
+    ./proto/epl/protobuf/geometry.proto
 ```
 
 ```bash
