@@ -22,17 +22,9 @@ set(PROTOS_GRPC ${CMAKE_SOURCE_DIR}/proto/geometry_operators.proto)
 set(PROTO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 file(MAKE_DIRECTORY ${PROTO_SRC_DIR})
 
-
 set(PROTOBUF_IMPORT_DIRS ${CMAKE_SOURCE_DIR}/proto)
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC} ${PROTOS_PROTOBUF})
-MESSAGE(STATUS "PROTO_SRCS  ${PROTO_SRCS}")
-MESSAGE(STATUS "PROTO_HDRS included ${PROTO_HDRS}")
-#grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC})
-#add_custom_target(name ALL
-#        DEPENDS
-#        ${PROTO_SRC_DIR}/geometry.pb.cc
-#        ${PROTO_SRC_DIR}/geometry_operators.pb.cc
-#        ${GRPC_SRC_DIR}/geometry_operators.grpc.pb.cc)
+grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS_GRPC})
 
 include_directories(${PROTO_SRC_DIR} /usr/local/include/grpc++)
 
@@ -42,12 +34,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(SOURCE_FILES
         ${PROTO_HDRS}
         ${PROTO_SRCS}
-        ${PROTO_SRC_DIR}/geometry_operators.grpc.pb.h
-        ${PROTO_SRC_DIR}/geometry_operators.grpc.pb.cc)
+        ${GRPC_HDRS}
+        ${GRPC_SRCS})
 
-
-#target_link_libraries(geometry_lib
-#        )
-#link_directories(/usr/local/lib)
 add_library(geometry_lib
         ${SOURCE_FILES})
