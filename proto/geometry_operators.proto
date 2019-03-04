@@ -27,7 +27,7 @@ option objc_class_prefix = "RTG";
 
 package epl.protobuf;
 
-import "epl/grpc/geometry.proto";
+import "geometry.proto";
 
 /*
  gRPC Interfaces for working with geometry operators

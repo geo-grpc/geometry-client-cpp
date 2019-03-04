@@ -1,11 +1,13 @@
+From inside repo directory
+
 ```bash
-protoc -I ./protos --grpc_out=./geometry --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ./protos/geometry_operators.proto
-```
-```bash
-protoc -I ./protos --cpp_out=./geometry ./protos/geometry_operators.proto 
+protoc --cpp_out ./geometry/src -I ./proto  ./proto/geometry_operators.proto ./proto/geometry.proto
 ```
 
-
+```bash
+protoc --grpc_out=./geometry/src -I ./proto  --plugin=protoc-gen-grpc=/usr/local/bin/grpc_cpp_plugin ./proto/geometry_operators.proto
+```
+    
 
 ## Testing
 
