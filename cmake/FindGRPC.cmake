@@ -49,6 +49,8 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
         endforeach()
     endif()
 
+    MESSAGE(STATUS "_protobuf_include_path included ${_protobuf_include_path}")
+
     set(${SRCS})
     set(${HDRS})
     foreach(FIL ${ARGN})
@@ -58,13 +60,19 @@ function(GRPC_GENERATE_CPP SRCS HDRS DEST)
         list(APPEND ${SRCS} "${DEST}/${FIL_WE}.grpc.pb.cc")
         list(APPEND ${HDRS} "${DEST}/${FIL_WE}.grpc.pb.h")
 
+        MESSAGE(STATUS "file included ${FIL}")
+        MESSAGE(STATUS "FIL_WE included ${FIL_WE}")
+        MESSAGE(STATUS "SRCS included ${${SRCS}}")
+        MESSAGE(STATUS "HDRS included ${${HDRS}}")
+        MESSAGE(STATUS "Command --grpc_out  ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}")
+
         add_custom_command(
                 OUTPUT "${DEST}/${FIL_WE}.grpc.pb.cc"
                 "${DEST}/${FIL_WE}.grpc.pb.h"
                 COMMAND protobuf::protoc
                 ARGS --grpc_out ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}
                 DEPENDS ${ABS_FIL} protobuf::protoc gRPC::grpc_cpp_plugin
-                COMMENT "Running C++ gRPC compiler on ${FIL}"
+                COMMENT "C++ gRPC compiler on ${FIL} with args: --grpc_out ${DEST} ${_protobuf_include_path} --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN} ${ABS_FIL}"
                 VERBATIM )
     endforeach()
 

@@ -4,8 +4,8 @@
 
 //#include "../geometry/geometry_operators.grpc.pb.h"
 //#include "../geometry/geometry_operators.pb.h"
-#include <geometry_operators.pb.h>
-#include <geometry_operators.grpc.pb.h>
+#include "geometry.pb.h"
+#include "geometry_operators.grpc.pb.h"
 #include "gtest/gtest.h"
 #include <grpc/grpc.h>
 #include <grpc++/channel.h>
@@ -17,6 +17,7 @@
 #include <regex>
 
 using namespace epl::protobuf;
+
 namespace {
     class GeometryClientTest : public ::testing::Test {
     protected:

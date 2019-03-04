@@ -49,6 +49,8 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS DEST)
         endforeach()
     endif()
 
+    MESSAGE(STATUS "_protobuf_include_path included ${_protobuf_include_path}")
+
     set(${SRCS})
     set(${HDRS})
     foreach(FIL ${ARGN})
@@ -58,13 +60,19 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS DEST)
         list(APPEND ${SRCS} "${DEST}/${FIL_WE}.pb.cc")
         list(APPEND ${HDRS} "${DEST}/${FIL_WE}.pb.h")
 
+        MESSAGE(STATUS "file included ${FIL}")
+        MESSAGE(STATUS "FIL_WE included ${FIL_WE}")
+        MESSAGE(STATUS "SRCS included ${${SRCS}}")
+        MESSAGE(STATUS "HDRS included ${${HDRS}}")
+        MESSAGE(STATUS "Command --cpp_out ${DEST} ${_protobuf_include_path} ${ABS_FIL}")
+
         add_custom_command(
                 OUTPUT "${DEST}/${FIL_WE}.pb.cc"
                 "${DEST}/${FIL_WE}.pb.h"
                 COMMAND protobuf::protoc
                 ARGS --cpp_out ${DEST} ${_protobuf_include_path} ${ABS_FIL}
                 DEPENDS ${ABS_FIL} protobuf::protoc
-                COMMENT "Running C++ protocol buffer compiler on ${FIL}"
+                COMMENT "Running C++ protobuf compiler on ${FIL} with args: --cpp_out ${DEST} ${_protobuf_include_path} ${ABS_FIL}"
                 VERBATIM )
     endforeach()
 
