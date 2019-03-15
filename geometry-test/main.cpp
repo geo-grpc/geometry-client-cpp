@@ -17,6 +17,7 @@
 #include <regex>
 
 using namespace epl::protobuf;
+using namespace epl::grpc;
 
 namespace {
     class GeometryClientTest : public ::testing::Test {
@@ -38,7 +39,7 @@ namespace {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
 
-        std::unique_ptr<GeometryOperators::Stub> geometry_stub = GeometryOperators::NewStub(channel);
+        std::unique_ptr<GeometryService::Stub> geometry_stub = GeometryService::NewStub(channel);
 
         GeometryBagData serviceGeometry;
         const char* wkt = "MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)), ((20 35, 45 20, 30 5, 10 10, 10 30, 20 35), (30 20, 20 25, 20 15, 30 20)))";
@@ -48,16 +49,16 @@ namespace {
         const char* wkt_cutter = "LINESTRING(0 0, 45 45)";
         cutterGeometry.add_wkt(wkt_cutter);
 
-        auto* operatorRequest = new OperatorRequest();
+        auto* operatorRequest = new GeometryRequest();
         operatorRequest->mutable_left_geometry_bag()->CopyFrom(serviceGeometry);
         operatorRequest->mutable_right_geometry_bag()->CopyFrom(cutterGeometry);
         operatorRequest->set_operator_type(ServiceOperatorType::Cut);
         operatorRequest->set_results_encoding_type(GeometryEncodingType::wkt);
 
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new OperatorResult();
+        auto* operatorResult = new GeometryResponse();
 
-        geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
+        geometry_stub->GeometryOperationUnary(clientContext, *operatorRequest, operatorResult);
 
         EXPECT_TRUE(operatorResult != nullptr);
         EXPECT_EQ(2, operatorResult->geometry_bag().wkt_size());
@@ -77,7 +78,7 @@ namespace {
         } else {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
-        std::unique_ptr<GeometryOperators::Stub> geometry_stub = GeometryOperators::NewStub(channel);
+        std::unique_ptr<GeometryService::Stub> geometry_stub = GeometryService::NewStub(channel);
 
         SpatialReferenceData spatialReferenceWGS84;
         spatialReferenceWGS84.set_wkid(4326);
@@ -92,7 +93,7 @@ namespace {
         serviceGeometry->add_wkt(wkt);
         serviceGeometry->set_allocated_spatial_reference(spatialReferenceCalif);
 
-        auto* operatorRequest = new OperatorRequest();
+        auto* operatorRequest = new GeometryRequest();
         operatorRequest->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS84);
         operatorRequest->set_allocated_left_geometry_bag(serviceGeometry);
         operatorRequest->set_allocated_operation_spatial_reference(spatialReferenceCalif);
@@ -100,9 +101,9 @@ namespace {
         operatorRequest->set_results_encoding_type(GeometryEncodingType::wkt);
 
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new OperatorResult();
+        auto* operatorResult = new GeometryResponse();
 
-        geometry_stub->ExecuteOperation(clientContext, *operatorRequest, operatorResult);
+        geometry_stub->GeometryOperationUnary(clientContext, *operatorRequest, operatorResult);
 
         std::string result = operatorResult->geometry_bag().wkt(0);
         std::string expected("MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))");
@@ -123,7 +124,7 @@ namespace {
         } else {
             channel = grpc::CreateChannel("localhost:8980", grpc::InsecureChannelCredentials());
         }
-        std::unique_ptr<GeometryOperators::Stub> geometry_stub = GeometryOperators::NewStub(channel);
+        std::unique_ptr<GeometryService::Stub> geometry_stub = GeometryService::NewStub(channel);
 
         /*
          * Polyline polyline = new Polyline();
@@ -165,7 +166,7 @@ namespace {
         geometryBagLeft->set_allocated_spatial_reference(&spatialReferenceNAD);
         geometryBagLeft->add_wkt(polyline);
 
-        auto* serviceOpLeft = new OperatorRequest();
+        auto* serviceOpLeft = new GeometryRequest();
         serviceOpLeft->set_allocated_left_geometry_bag(geometryBagLeft);
         serviceOpLeft->set_operator_type(ServiceOperatorType::Buffer);
         BufferParams bufferParams;
@@ -174,14 +175,14 @@ namespace {
         serviceOpLeft->mutable_result_spatial_reference()->CopyFrom(spatialReferenceWGS);
 
                /*
-        OperatorRequest nestedLeft = OperatorRequest
+        GeometryRequest nestedLeft = GeometryRequest
                 .newBuilder()
                 .setLeftNestedRequest(serviceOpLeft)
                 .setOperatorType(ServiceOperatorType.ConvexHull)
                 .setResultSpatialReference(spatialReferenceGall)
                 .build();
                 */
-        auto* nestedLeft = new OperatorRequest();
+        auto* nestedLeft = new GeometryRequest();
         nestedLeft->set_allocated_left_geometry_request(serviceOpLeft);
         nestedLeft->set_operator_type(ServiceOperatorType::ConvexHull);
         nestedLeft->mutable_result_spatial_reference()->CopyFrom(spatialReferenceGall);
@@ -201,33 +202,33 @@ namespace {
 //        geometryBagRight->add_geometry_strings(polyline);
 
                  /*
-        OperatorRequest serviceOpRight = OperatorRequest
+        GeometryRequest serviceOpRight = GeometryRequest
                 .newBuilder()
                 .setLeftGeometryBag(geometryBagRight)
                 .setOperatorType(ServiceOperatorType.GeodesicBuffer)
-                .setBufferParams(OperatorRequest.BufferParams.newBuilder().addDistances(1000).setUnionResult(false).build())
+                .setBufferParams(GeometryRequest.BufferParams.newBuilder().addDistances(1000).setUnionResult(false).build())
                 .setOperationSpatialReference(spatialReferenceWGS)
                 .build();
                   */
-        auto* serviceOpRight = new OperatorRequest();
+        auto* serviceOpRight = new GeometryRequest();
         serviceOpRight->set_allocated_left_geometry_bag(geometryBagRight);
         serviceOpRight->set_operator_type(ServiceOperatorType::GeodesicBuffer);
         BufferParams geodesicBufferParams;
-//        OperatorRequest_BufferParams geodesicBufferParams;
+//        GeometryRequest_BufferParams geodesicBufferParams;
         geodesicBufferParams.add_distances(1000);
         geodesicBufferParams.set_union_result(false);
         serviceOpRight->set_allocated_buffer_params(&geodesicBufferParams);
         serviceOpRight->mutable_operation_spatial_reference()->CopyFrom(spatialReferenceWGS);
 
                   /*
-        OperatorRequest nestedRight = OperatorRequest
+        GeometryRequest nestedRight = GeometryRequest
                 .newBuilder()
                 .setLeftNestedRequest(serviceOpRight)
                 .setOperatorType(ServiceOperatorType.ConvexHull)
                 .setResultSpatialReference(spatialReferenceGall)
                 .build();
                    */
-        auto* nestedRight = new OperatorRequest();
+        auto* nestedRight = new GeometryRequest();
         nestedRight->set_allocated_left_geometry_request(serviceOpRight);
         nestedRight->set_operator_type(ServiceOperatorType::ConvexHull);
         nestedRight->mutable_result_spatial_reference()->CopyFrom(spatialReferenceGall);
@@ -235,7 +236,7 @@ namespace {
 
                    /*
 
-        OperatorRequest operatorRequestContains = OperatorRequest
+        GeometryRequest operatorRequestContains = GeometryRequest
                 .newBuilder()
                 .setLeftNestedRequest(nestedLeft)
                 .setRightNestedRequest(nestedRight)
@@ -243,21 +244,21 @@ namespace {
                 .setOperationSpatialReference(spatialReferenceMerc)
                 .build();
                     */
-        auto* operatorRequestContains = new OperatorRequest();
+        auto* operatorRequestContains = new GeometryRequest();
         operatorRequestContains->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestContains->set_allocated_right_geometry_request(serviceOpRight);
         operatorRequestContains->set_operator_type(ServiceOperatorType::Contains);
         operatorRequestContains->mutable_operation_spatial_reference()->CopyFrom(spatialReferenceMerc);
                     /*
 
-        GeometryOperatorsGrpc.GeometryOperatorsBlockingStub stub = GeometryOperatorsGrpc.newBlockingStub(inProcessChannel);
-        OperatorResult operatorResult = stub.executeOperation(operatorRequestContains);
+        GeometryServiceGrpc.GeometryServiceBlockingStub stub = GeometryServiceGrpc.newBlockingStub(inProcessChannel);
+        GeometryResponse operatorResult = stub.executeOperation(operatorRequestContains);
         Map<Integer, Boolean> map = operatorResult.getRelateMapMap();
   */
         auto* clientContext = new grpc::ClientContext();
-        auto* operatorResult = new OperatorResult();
+        auto* operatorResult = new GeometryResponse();
 
-        geometry_stub->ExecuteOperation(clientContext, *operatorRequestContains, operatorResult);
+        geometry_stub->GeometryOperationUnary(clientContext, *operatorRequestContains, operatorResult);
 
         ::google::protobuf::Map< ::google::protobuf::int64, bool > stuff = operatorResult->relate_map();
 //        std::string result = operatorResult->geometry_bag().geometry_strings(0);
@@ -265,16 +266,16 @@ namespace {
         EXPECT_TRUE(stuff.at(0));
 
         auto* clientContext2 = new grpc::ClientContext();
-        auto* operatorResult2 = new OperatorResult();
+        auto* operatorResult2 = new GeometryResponse();
 
-        auto* operatorRequestUnion = new OperatorRequest();
+        auto* operatorRequestUnion = new GeometryRequest();
         operatorRequestUnion->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestUnion->set_allocated_right_geometry_request(serviceOpRight);
         operatorRequestUnion->set_operator_type(ServiceOperatorType::Union);
         operatorRequestUnion->mutable_operation_spatial_reference()->CopyFrom(spatialReferenceMerc);
         operatorRequestUnion->set_results_encoding_type(geojson);
 
-        geometry_stub->ExecuteOperation(clientContext2, *operatorRequestUnion, operatorResult2);
+        geometry_stub->GeometryOperationUnary(clientContext2, *operatorRequestUnion, operatorResult2);
 
 //        fprintf(stderr, "results json %s\n", operatorResult2->geometry_bag().geojson(0).c_str());
     }
