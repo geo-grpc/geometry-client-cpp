@@ -1,8 +1,8 @@
 version: '3'
 services:
   geometry-client:
-    container_name: geometry-client-c
-    image: geometry-client-i
+    container_name: geometry-client-cpp-c
+    image: geometry-client-cpp-i
     build:
       context: .
       dockerfile: Dockerfile
