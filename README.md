@@ -1,3 +1,14 @@
+Check Dockerfile for required libraries
+
+Cmake
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+Playing with protos without cmake (better off just using cmake as the below isn't guaranteed to work:
 From inside repo directory
 
 ```bash
@@ -7,7 +18,9 @@ protoc --cpp_out ./geometry/src -I ./proto \
 ```
 
 ```bash
-protoc --grpc_out=./geometry/src -I ./proto  --plugin=protoc-gen-grpc=/usr/local/bin/grpc_cpp_plugin ./proto/epl/grpc/geometry_operators.proto
+protoc --grpc_out=./geometry/src -I ./proto  \
+    --plugin=protoc-gen-grpc=/usr/local/bin/grpc_cpp_plugin \
+    ./proto/epl/grpc/geometry_operators.proto
 ```
     
 
