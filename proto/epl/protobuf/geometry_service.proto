@@ -21,12 +21,12 @@ email: info@echoparklabs.io
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.epl.grpc";
+option java_package = "com.epl.protobuf";
 option java_outer_classname = "GeometryServiceProto";
 option objc_class_prefix = "GMS";
-option go_package = "github.com/geo-grpc/api/golang/epl/grpc";
+option go_package = "github.com/geo-grpc/api/golang/epl/protobuf";
 
-package epl.grpc;
+package epl.protobuf;
 
 import "epl/protobuf/geometry.proto";
 
@@ -45,7 +45,7 @@ service GeometryService {
     rpc GeometryOperationBiStreamFlow(stream epl.protobuf.GeometryRequest) returns (stream epl.protobuf.GeometryResponse) {}
 
     // Maybe a cut operation that returns a lot of different geometries? for now, this is not implemented.
-    // rpc GeometryOperationServerStream(epl.protobuf.GeometryRequest) returns (stream epl.protobuf.GeometryResponse) {}
+    rpc GeometryOperationServerStream(epl.protobuf.GeometryRequest) returns (stream epl.protobuf.GeometryResponse) {}
 
     // Maybe something like a union operation. for now, this is not implemented.
     // rpc GeometryOperationClientStream(stream epl.protobuf.GeometryRequest) returns (epl.protobuf.GeometryResponse) {}
