@@ -85,8 +85,8 @@ namespace {
         GeometryRequest operatorRequest;
         operatorRequest.mutable_left_geometry()->CopyFrom(serviceGeometry);
         operatorRequest.mutable_right_geometry()->CopyFrom(cutterGeometry);
-        operatorRequest.set_operator_(GeometryRequest::Cut);
-        operatorRequest.set_result_encoding(GeometryData::WKT);
+        operatorRequest.set_operator_(OperatorType::CUT);
+        operatorRequest.set_result_encoding(Encoding::WKT);
         GeometryResponse geometryResponse;
         ClientContext context;
 
@@ -143,8 +143,8 @@ namespace {
         operatorRequest->mutable_result_sr()->CopyFrom(spatialReferenceWGS84);
         operatorRequest->set_allocated_left_geometry(serviceGeometry);
         operatorRequest->set_allocated_operation_sr(spatialReferenceCalif);
-        operatorRequest->set_operator_(GeometryRequest::Project);
-        operatorRequest->set_result_encoding(GeometryData::WKT);
+        operatorRequest->set_operator_(OperatorType::PROJECT);
+        operatorRequest->set_result_encoding(Encoding::WKT);
 
         auto* clientContext = new grpc::ClientContext();
         auto* operatorResult = new GeometryResponse();
@@ -214,7 +214,7 @@ namespace {
 
         auto* serviceOpLeft = new GeometryRequest();
         serviceOpLeft->set_allocated_left_geometry(geometryBagLeft);
-        serviceOpLeft->set_operator_(GeometryRequest::Buffer);
+        serviceOpLeft->set_operator_(OperatorType::BUFFER);
         GeometryRequest::BufferParams bufferParams;
         bufferParams.set_distance(.5);
         serviceOpLeft->set_allocated_buffer_params(&bufferParams);
@@ -230,7 +230,7 @@ namespace {
                 */
         auto* nestedLeft = new GeometryRequest();
         nestedLeft->set_allocated_left_geometry_request(serviceOpLeft);
-        nestedLeft->set_operator_(GeometryRequest::ConvexHull);
+        nestedLeft->set_operator_(OperatorType::CONVEX_HULL);
         nestedLeft->mutable_result_sr()->CopyFrom(spatialReferenceGall);
 
                 /*
@@ -258,7 +258,7 @@ namespace {
                   */
         auto* serviceOpRight = new GeometryRequest();
         serviceOpRight->set_allocated_left_geometry(geometryBagRight);
-        serviceOpRight->set_operator_(GeometryRequest::GeodesicBuffer);
+        serviceOpRight->set_operator_(OperatorType::GEODESIC_BUFFER);
         GeometryRequest::BufferParams geodesicBufferParams;
 //        GeometryRequest_BufferParams geodesicBufferParams;
         geodesicBufferParams.set_distance(1000);
@@ -276,7 +276,7 @@ namespace {
                    */
         auto* nestedRight = new GeometryRequest();
         nestedRight->set_allocated_left_geometry_request(serviceOpRight);
-        nestedRight->set_operator_(GeometryRequest::ConvexHull);
+        nestedRight->set_operator_(OperatorType::CONVEX_HULL);
         nestedRight->mutable_result_sr()->CopyFrom(spatialReferenceGall);
 
 
@@ -293,7 +293,7 @@ namespace {
         auto* operatorRequestContains = new GeometryRequest();
         operatorRequestContains->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestContains->set_allocated_right_geometry_request(serviceOpRight);
-        operatorRequestContains->set_operator_(GeometryRequest::Contains);
+        operatorRequestContains->set_operator_(OperatorType::CONTAINS);
         operatorRequestContains->mutable_operation_sr()->CopyFrom(spatialReferenceMerc);
                     /*
 
@@ -317,9 +317,9 @@ namespace {
         auto* operatorRequestUnion = new GeometryRequest();
         operatorRequestUnion->set_allocated_left_geometry_request(serviceOpLeft);
         operatorRequestUnion->set_allocated_right_geometry_request(serviceOpRight);
-        operatorRequestUnion->set_operator_(GeometryRequest::Union);
+        operatorRequestUnion->set_operator_(OperatorType::UNION);
         operatorRequestUnion->mutable_operation_sr()->CopyFrom(spatialReferenceMerc);
-        operatorRequestUnion->set_result_encoding(GeometryData::GEOJSON);
+        operatorRequestUnion->set_result_encoding(Encoding::GEOJSON);
 
         geometry_stub->GeometryOperationUnary(clientContext2, *operatorRequestUnion, operatorResult2);
 
