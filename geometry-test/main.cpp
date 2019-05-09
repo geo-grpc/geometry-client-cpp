@@ -42,7 +42,6 @@
 #include <cstdlib>
 #include <memory>
 #include <regex>
-#include <completion_queue.h>
 
 using namespace epl::protobuf;
 
