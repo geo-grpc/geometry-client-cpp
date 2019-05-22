@@ -94,7 +94,7 @@ namespace {
                   << std::endl;
 
         std::unique_ptr<ClientReader<GeometryResponse> > reader(
-                geometry_stub->GeometryOperationServerStream(&context, operatorRequest));
+                geometry_stub->OperateServerStream(&context, operatorRequest));
         int count = 0;
         const char* expected1 = "MULTIPOLYGON (((35.625 35.625, 40 40, 20 45, 35.625 35.625)), ((10 10, 20 20, 20 25, 23.333333333333336 23.333333333333336, 29.375 29.375, 20 35, 10 30, 10 10)))";
         const char* expected2 = "MULTIPOLYGON (((40 40, 35.625 35.625, 45 30, 40 40)), ((30 5, 45 20, 29.375 29.375, 23.333333333333336 23.333333333333336, 30 20, 20 15, 20 20, 10 10, 30 5)))";
@@ -149,7 +149,7 @@ namespace {
         auto* clientContext = new grpc::ClientContext();
         auto* operatorResult = new GeometryResponse();
 
-        geometry_stub->GeometryOperationUnary(clientContext, *operatorRequest, operatorResult);
+        geometry_stub->Operate(clientContext, *operatorRequest, operatorResult);
 
         std::string result = operatorResult->geometry().wkt();
         std::string expected("MULTILINESTRING ((9 0, 8.101251062924646 0.904618578893133, 9.898748937075354 -0.904618578893133))");
@@ -304,7 +304,7 @@ namespace {
         auto* clientContext = new grpc::ClientContext();
         auto* operatorResult = new GeometryResponse();
 
-        geometry_stub->GeometryOperationUnary(clientContext, *operatorRequestContains, operatorResult);
+        geometry_stub->Operate(clientContext, *operatorRequestContains, operatorResult);
 
         ::google::protobuf::Map< ::google::protobuf::int64, bool > stuff = operatorResult->relate_map();
 //        std::string result = operatorResult->geometry_bag().geometry_strings(0);
@@ -321,7 +321,7 @@ namespace {
         operatorRequestUnion->mutable_operation_sr()->CopyFrom(spatialReferenceMerc);
         operatorRequestUnion->set_result_encoding(Encoding::GEOJSON);
 
-        geometry_stub->GeometryOperationUnary(clientContext2, *operatorRequestUnion, operatorResult2);
+        geometry_stub->Operate(clientContext2, *operatorRequestUnion, operatorResult2);
 
 //        fprintf(stderr, "results json %s\n", operatorResult2->geometry_bag().geojson(0).c_str());
     }
