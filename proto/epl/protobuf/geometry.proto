@@ -53,8 +53,61 @@ message GeometryData {
     // spatial reference of geometry
     SpatialReferenceData sr = 7;
 
+    // reserved for xy array, z array, m array, vertex attributes?
+    reserved 8 to 12;
+
     // envelope or bounding box of geometry
-    EnvelopeData envelope = 8;
+    EnvelopeData envelope = 13;
+    // state of the geometry topological correctness. at geometry creation, it is unknown if it is simple
+    SimpleState simple = 14;
+}
+
+/**
+ * the state of a geometry topological correctness
+ */
+enum SimpleState {
+    // on creation, after projection and after generalization a geometry has state simple unknown (not know if simple or not)
+    SIMPLE_UNKNOWN = 0;
+    // weak simple (no self intersections, ring orientation is correct, but ring order is not)
+    WEAK_SIMPLE = 1;
+    // same as weak simple + OGC ring order.
+    STRONG_SIMPLE = 2;
+    // is_simple method has been run on the geometry and it is known to be non-simple, but the reason is unknown
+    NON_SIMPLE = 3;
+    // non-simple, because the structure is bad (0 size path, for example).
+    STRUCTURE_FLAW = 4;
+    // Non-simple, because there are degenerate segments.
+    DEGENERATE_SEGMENTS = 5;
+    // Non-simple, because not clustered properly, that is there are non-coincident vertices closer than tolerance.
+    CLUSTERING = 6;
+    // Non-simple, because not cracked properly (intersecting segments, overlaping segments)
+    CRACKING = 7;
+    // Non-simple, because there are crossovers (self intersections that are not cracking case).
+    CROSS_OVER = 8;
+    // Non-simple, because holes or exteriors have wrong orientation.
+    RING_ORIENTATION = 9;
+    //    /**
+    //     * The geometry is simple, but not strong-simple, because exteriors
+    //     * and holes are not in the correct order, and separation into sub polygons is not possible.
+    //     * Geometry needs to be resimplified with the bForceTest = true to fix this.
+    //     */
+    //    RingOrder,
+    //    /**
+    //     * There is a self tangency or cross-over situation (strong simple, but not OGC simple)
+    //     * Only OperatorSimplifyOGC returns this.
+    //     */
+    //    OGCPolylineSelfTangency,
+    //    /**
+    //     * There is a self tangency situation (strong simple, but not OGC simple)
+    //     * Only OperatorSimplifyOGC returns this.
+    //     */
+    //    OGCPolygonSelfTangency,
+    //    /**
+    //     * Touching interioir rings make a disconnected point set from polygon interior
+    //     * (strong simple, but not OGC simple).
+    //     * Only OperatorSimplifyOGC returns this.
+    //     */
+    //    OGCDisconnectedInterior
 }
 
 /**
@@ -63,7 +116,7 @@ message GeometryData {
 message SpatialReferenceData {
     // oneof block not currently used: https://github.com/golang/protobuf/issues/283
 
-    // wkid (well know id), or srid (spatial reference id) of the projected or geographic coordinate system
+    // epsg wkid (well know id), or srid (spatial reference id) of the projected or geographic coordinate system
     int32 wkid = 1;
     // proj string describing a projection or geographic coordinate system https://proj4.org/usage/projections.html
     string proj4 = 2;
@@ -71,6 +124,8 @@ message SpatialReferenceData {
     Custom custom = 3;
     // well-known text string of spatial reference
     string wkt = 4;
+    // esri wkid (if not yet approved by epsg)
+    int32 esri_wkid = 5;
 
     // end oneof block not currently used: https://github.com/golang/protobuf/issues/283
 
@@ -107,6 +162,9 @@ message EnvelopeData {
 
     // spatial reference of envelope
     SpatialReferenceData sr = 5;
+
+    double zmin = 6;
+    double zmax = 7;
 }
 
 /*
@@ -176,6 +234,9 @@ enum OperatorType {
     BOUNDARY = 44;
     RANDOM_POINTS = 45;
     ENCLOSING_CIRCLE = 46;
+    AFFINE_TRANSFORM = 47;
+    GEODETIC_LENGTH = 48;
+    GEODETIC_INVERSE = 49;
 }
 
 /**
@@ -289,6 +350,14 @@ message GeometryRequest {
         bool force = 1;
     }
 
+    message AffineTransformParams {
+        //        repeated double transform_matrix = 1; // @exclude deprecated
+        reserved 1;
+        bool geodetic = 2;
+        double x_offset = 3;
+        double y_offset = 4;
+    }
+
     // oneof https://github.com/golang/protobuf/issues/283
 
     BufferParams buffer_params = 11;
@@ -303,8 +372,18 @@ message GeometryRequest {
     DensifyParams densify_params = 20;
     SimplifyParams simplify_params = 21;
     GeneralizeByAreaParams generalize_by_area_params = 22;
+    AffineTransformParams affine_transform_params = 23;
 
     // end oneof https://github.com/golang/protobuf/issues/283
+}
+
+message GeodeticInverse {
+    // Azimuth from the first to the second point
+    double az12 = 1;
+    // Azimuth from the second to the first point
+    double az21 = 2;
+    // Geodesic distance
+    double distance = 3;
 }
 
 /**
@@ -323,6 +402,8 @@ message GeometryResponse {
     map<int64, bool> relate_map = 4;
 
     EnvelopeData envelope = 5;
+
+    GeodeticInverse geodetic_inverse = 6;
 
     // end oneof https://github.com/golang/protobuf/issues/283
 }
